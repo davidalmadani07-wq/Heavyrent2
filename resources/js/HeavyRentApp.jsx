@@ -2,8 +2,47 @@ import React, { useState, useEffect } from "react";
 import {
   Truck, LogOut, Plus, Pencil, Trash2, Search, CalendarDays,
   CheckCircle2, XCircle, Clock, PackageSearch, Users, ClipboardList,
-  LayoutDashboard, ShieldCheck, X, AlertTriangle, HardHat, ChevronRight
+  LayoutDashboard, ShieldCheck, X, AlertTriangle, HardHat, ChevronRight, KeyRound
 } from "lucide-react";
+
+/* ---------------- Demo account seeds ---------------- */
+
+const DEMO_ACCOUNTS = {
+  customer: { label: "Pelanggan", email: "customer@heavyrent.test", password: "customer123" },
+  admin: { label: "Admin", email: "admin@heavyrent.test", password: "admin123" },
+};
+
+function DemoAccountsBox({ onFill }) {
+  return (
+    <div className="mt-4 rounded-md p-3 text-xs" style={{ background: "#F4F4F2", border: "1px solid var(--hr-line)" }}>
+      <div className="flex items-center gap-1.5 mb-2 font-bold" style={{ color: "var(--hr-charcoal)" }}>
+        <KeyRound size={13} /> Akun Demo (Seeder)
+      </div>
+      {Object.entries(DEMO_ACCOUNTS).map(([key, acc]) => (
+        <p key={key} className="leading-relaxed">
+          <span className="font-bold">{acc.label}:</span> Email{" "}
+          <button
+            type="button"
+            onClick={() => onFill(acc)}
+            className="px-1 rounded font-mono"
+            style={{ background: "#E2ECFB", color: "#2452A6" }}
+          >
+            {acc.email}
+          </button>{" "}
+          / Pass{" "}
+          <button
+            type="button"
+            onClick={() => onFill(acc)}
+            className="px-1 rounded font-mono"
+            style={{ background: "#E2ECFB", color: "#2452A6" }}
+          >
+            {acc.password}
+          </button>
+        </p>
+      ))}
+    </div>
+  );
+}
 
 /* ============================================================
    HEAVYRENT — terhubung ke backend Laravel + MySQL lewat fetch API
@@ -268,6 +307,12 @@ function AuthScreen({ onLogin, onRegister }) {
               {busy ? "Memproses..." : mode === "login" ? "Masuk" : "Buat Akun"}
             </PrimaryBtn>
           </form>
+
+          {mode === "login" && (
+            <DemoAccountsBox
+              onFill={(acc) => setForm({ ...form, email: acc.email, password: acc.password })}
+            />
+          )}
         </div>
       </div>
     </div>
