@@ -286,17 +286,10 @@ function AuthScreen({ onLogin, onRegister }) {
                 onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="••••••••" />
             </Field>
             {mode === "register" && (
-              <Field label="Daftar sebagai">
-                <div className="grid grid-cols-2 gap-2">
-                  {["customer", "admin"].map((r) => (
-                    <button type="button" key={r} onClick={() => setForm({ ...form, role: r })}
-                      className="py-2 rounded border text-sm font-semibold capitalize"
-                      style={form.role === r ? { background: "var(--hr-yellow)", borderColor: "var(--hr-yellow)" } : { borderColor: "var(--hr-line)" }}>
-                      {r === "customer" ? "Pelanggan" : "Admin"}
-                    </button>
-                  ))}
-                </div>
-              </Field>
+              <p className="text-xs mb-3" style={{ color: "var(--hr-steel)" }}>
+                Pendaftaran akun baru hanya untuk role <span className="font-bold">Pelanggan</span>.
+                Akses Admin dikelola langsung oleh pengelola sistem.
+              </p>
             )}
             {error && (
               <p className="text-sm mb-3 flex items-center gap-1.5" style={{ color: "#B02A2A" }}>
