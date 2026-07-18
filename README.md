@@ -1,58 +1,123 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# HeavyRent — Platform Sewa Excavator & Operator
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web penyewaan **excavator dan operator bersertifikat**, dengan frontend
+**React (JSX)** bertema industrial "plat unit alat berat", terhubung ke backend
+**Laravel + MySQL** melalui REST API (`fetch`). Mendukung dua role pengguna:
+**Customer** dan **Admin**, masing-masing dengan dashboard dan fitur berbeda.
 
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+## Struktur Project
+```
+heavyrent/
+├── resources/js/
+│   └── HeavyRentApp.jsx      <- root React component (single file)
+└── routes/
+<<<<<<< HEAD
+    └── api.php                <- endpoint Laravel yang dikonsumsi frontend
+=======
+    └── web.php                <- endpoint Laravel yang dikonsumsi frontend
+>>>>>>> 178fd3e28c32e2d30fd6e92ccbd85f44ba3dede2
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Tech Stack
+- **Frontend**: React (hooks: `useState`, `useEffect`), Tailwind CSS, ikon dari `lucide-react`
+- **Backend**: Laravel (REST API, autentikasi berbasis session + CSRF token)
+- **Database**: MySQL
 
-## Contributing
+## Autentikasi
+- `AuthScreen` menyediakan form **Masuk** dan **Daftar** dalam satu komponen (toggle tab).
+- Saat daftar, user memilih role: **Pelanggan (customer)** atau **Admin**.
+- CSRF token diambil otomatis dari meta tag `<meta name="csrf-token">` dan disertakan
+  di setiap request (`apiFetch`) lewat header `X-CSRF-TOKEN`.
+- Endpoint yang digunakan: `POST /login`, `POST /register`, `POST /logout`, `GET /me`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Alur Aplikasi
+1. Saat pertama dimuat, aplikasi memanggil `/me`, `/excavators`, dan `/operators` secara paralel.
+2. Jika user belum login, tampil `AuthScreen`.
+3. Jika sudah login, `Sidebar` menampilkan menu navigasi sesuai role, dan konten utama
+   dirender berdasarkan `view` yang aktif.
 
-## Code of Conduct
+## Fitur per Role
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Customer
+| View | Komponen | Deskripsi |
+|---|---|---|
+| Katalog | `CatalogView` | Menampilkan daftar excavator (dengan pencarian) dan operator yang tersedia, lengkap dengan status dan harga per hari |
+| Sewa Baru | `BookingView` | Form pemesanan: pilih excavator + operator, tentukan tanggal mulai/selesai, total biaya dihitung otomatis (`(harga excavator + harga operator) × jumlah hari`) |
+| Riwayat Pesanan | `HistoryView` | Menampilkan riwayat pesanan milik user beserta status terkini |
 
-## Security Vulnerabilities
+### Admin
+| View | Komponen | Deskripsi |
+|---|---|---|
+| Ringkasan | `AdminOverview` | Dashboard ringkasan kondisi alat, operator, dan pesanan |
+| Kelola Alat | `ExcavatorAdmin` | CRUD data excavator (Tambah/Edit/Hapus) |
+| Kelola Operator | `OperatorAdmin` | CRUD data operator (Tambah/Edit/Hapus) |
+| Pesanan Masuk | `OrdersAdmin` | Melihat semua pesanan masuk dan mengubah status (Setujui/Tolak/Selesaikan, dsb) |
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Status & Badge
+Status ditampilkan menggunakan komponen `Badge`, dengan pemetaan label Bahasa Indonesia:
 
-## License
+| Status (key) | Label | Tone |
+|---|---|---|
+| `available` | Tersedia | Hijau |
+| `rented` / `assigned` | Disewa / Bertugas | Kuning |
+| `maintenance` | Perawatan | Merah |
+| `pending` | Menunggu Persetujuan | Kuning |
+| `approved` | Disetujui | Biru |
+| `on_progress` | Sedang Berjalan | Biru |
+| `completed` | Selesai | Hijau |
+| `rejected` | Ditolak | Merah |
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Alur status pesanan berjalan mengikuti aksi admin di `OrdersAdmin` (`NEXT_STATUS`),
+misalnya dari **Menunggu Persetujuan** → **Disetujui**/**Ditolak** → **Sedang Berjalan** → **Selesai**.
+
+## Endpoint API yang Dikonsumsi
+```
+GET    /me
+POST   /login
+POST   /register
+POST   /logout
+
+GET    /excavators
+POST   /excavators
+PUT    /excavators/{id}
+DELETE /excavators/{id}
+
+GET    /operators
+POST   /operators
+PUT    /operators/{id}
+DELETE /operators/{id}
+
+GET    /bookings
+POST   /bookings
+PATCH  /bookings/{id}/status
+```
+Semua request dan response menggunakan format **JSON**, dan setiap error dari backend
+diharapkan mengembalikan `message` atau `errors` (format validasi Laravel) agar dapat
+ditampilkan langsung di form.
+
+## Format Angka & Tanggal
+- Mata uang ditampilkan dalam format Rupiah: `idr(n)` → `Rp 1.000.000`.
+- Durasi sewa dihitung dengan `daysBetween(start, end)`, inklusif tanggal awal dan akhir.
+
+## Tema Visual
+Menggunakan palet warna kustom (`RootStyles`) bertema "plat nomor alat berat":
+- `--hr-charcoal` (#1B1E23) — latar gelap sidebar & auth screen
+- `--hr-yellow` (#F5B700) — aksen utama (safety yellow)
+- `--hr-orange` (#E8590C) — tombol utama/aksi
+- Font: **Oswald** (judul/tombol) dan **IBM Plex Mono** (kode serial/angka)
+
+## Menjalankan Aplikasi
+1. Pastikan backend Laravel sudah berjalan dan endpoint di atas tersedia.
+2. Set meta tag CSRF di halaman Blade utama:
+   ```html
+   <meta name="csrf-token" content="{{ csrf_token() }}">
+   ```
+3. Import dan render `HeavyRentApp.jsx` sebagai root component React di halaman tersebut.
+4. Pastikan Tailwind CSS sudah dikonfigurasi di project agar seluruh utility class tampil dengan benar.
+
+## Catatan Penting
+- Booking baru hanya bisa dibuat untuk excavator **dan** operator berstatus `available`.
+- Setelah admin mengubah status pesanan, data excavator dan operator otomatis di-refresh
+  agar status ketersediaannya konsisten dengan pesanan terbaru.
+- Jika data awal (`/me`, `/excavators`, `/operators`) gagal dimuat sama sekali, aplikasi
+  menampilkan halaman error dan menyarankan memastikan backend Laravel & database berjalan.
