@@ -25,7 +25,7 @@ heavyrent/
 
 ## Autentikasi
 - `AuthScreen` menyediakan form **Masuk** dan **Daftar** dalam satu komponen (toggle tab).
-- Saat daftar, user memilih role: **Pelanggan (customer)** atau **Admin**.
+- Saat daftar, user memilih role: **Pelanggan (customer)**.
 - CSRF token diambil otomatis dari meta tag `<meta name="csrf-token">` dan disertakan
   di setiap request (`apiFetch`) lewat header `X-CSRF-TOKEN`.
 - Endpoint yang digunakan: `POST /login`, `POST /register`, `POST /logout`, `GET /me`.
